@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Writing Clean and Simple Tests</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Writing Clean and Simple Tests</h1>
+					<br>
+					<p>Waldemar Schneider</p>
+					<p>FLAVIA IT-Management GmbH</p>
+				</section>
+
+				<section>
+					
+					<section>
+						<h1>Agenda</h1>
+
+                        <p>
+                            <ul>
+                                <li>Story Telling with Tests</li>
+                                <li>Test Structure</li>
+                                <li>Essentials of Creating Test Data</li>
+                                <li>Test Frameworks</li>
+                            </ul>
+                        </p>
+						
+					</section>
+
+                </section>
+
+                <section>
+                    <section>
+                        <h1>Story Telling with Tests</h1>
+                    </section>
+
+					<section>
+						<h2>Worst Case Scenario</h2>
+						<p class="fragment fade-in">the project has many tests</p>
+						<p class="fragment fade-in">has a <i>"good"</i> coverage (~70%-80%)</p>
+						<p class="fragment fade-in">developer for the project are exchanged</p>
+						<p class="fragment fade-in">new developer refactores code and fixes tests (or the other way around?)</p>
+						<p class="fragment fade-in">obsolete tests were not deleted..</p>
+					</section>
+					
+					<section>
+                        <h2>Requirements for Tests</h2>
+						<p>
+                            <ul>
+                                <li class="fragment fade-in">test and documenting functionality</li>
+                                <li class="fragment fade-in">describing name</li>
+                                <li class="fragment fade-in">expected result</li>
+                                <li class="fragment fade-in">easy to understand</li>
+                                <li class="fragment fade-in">called test method</li>
+                            </ul>
+						</p>
+					</section>
+
+                    <section>
+                        <h2>Right Test Name is Crucial</h2>
+                    </section>
+
+                    <section>
+                        <h2>Common Problems for Finding Test Names</h2>
+
+                        <p>
+                            <ul>
+                                <li class="fragment fade-in">complex domain setup</li>
+                                <li class="fragment fade-in">conditions</li>
+                                <li class="fragment fade-in">many test cases for a method</li>
+                                <li class="fragment fade-in">finding right abstraction</li>
+                            </ul>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2>Example</h2>
+
+                        <p>
+                            User is registred within a registry
+                        </p>
+                        <pre>
+                            <code data-trim>
+                                public User registerUser(User user) {
+    validateUser(user);
+
+    generateId(user);
+    addUserRole(user);
+    registerInteral(user);
+    activateUser(user);
+
+    return user;
+}
+                            </code>
+                        </pre>
+                    </section>
+
+                    <section>
+                        <h2>Example Test Names</h2>
+
+                        <p>
+                            <ul>
+                                <li>registerUserSuccessfulRegistersUser</li>
+                                <li>registerUserCreatesDefaultRole</li>
+                                <li>registerUserSetIdentifier</li>
+                                <li>registerUserActivatesUser</li>
+                            </ul>
+
+                        </p>
+                    </section>
+
+				</section>
+
+                <section>
+                    <section>
+                        <h2>Test Structure</h2>
+                    </section>
+
+                    <section>
+                        <h2>Same Requirements as before</h2>
+
+                        <p>
+                            <ul>
+                                <li>test and documenting functionality</li>
+                                <li>describing name</li>
+                                <li>expected result</li>
+                                <li>easy to understand</li>
+                                <li>called test method</li>
+                                <li class="fragment fade-in">one assertion per test</li>
+                            </ul>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2>Example Structure</h2>
+
+                        <p>
+                            <pre>
+                            <code data-trim>
+                                @Test
+public void registerUserSuccessfulRegistersUser() throws Exception {
+    // given
+    User user = givenSomeUser();
+
+    // when
+    User registerUser = userRegistrar.registerUser(user);
+
+    // then
+    assertThat(registerUser, hasProperty("id", notNullValue()));
+}
+                            </code>
+                        </pre>
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>
+                            <pre>
+                            <code data-trim>
+@Test
+public void registerUserWithNoFirstNameThrowsException() throws Exception {
+    // given
+    User user = givenSomeUser();
+    user.setFirstName(null);
+
+    // expect
+    expectedException.expect(NullPointerException.class);
+
+    // when
+    userRegistrar.registerUser(user);
+}
+                            </code>
+                        </pre>
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>
+                            Essentials of Creating Test Data
+                        </h2>
+                    </section>
+
+                    <section>
+                        <h2>Typical Scenario</h2>
+
+                        <p class="fragment fade-in">developing in the beginning is fast</p>
+                        <p class="fragment fade-in">and becomes slower with the time</p>
+                        <p class="fragment fade-in">along with refactoring</p>
+                    </section>
+
+                    <section>
+                        <h2>Good Approach:</h2>
+
+                        <h3>Test Mother</h3>
+                    </section>
+
+                    <section>
+                        <h2>Tasks</h2>
+
+                        <p>
+                            <ol>
+                                <li class="fragment fade-in">creating reusable test data across the project</li>
+                                <li class="fragment fade-in">provisioning of "suply" methods</li>
+                            </ol>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2>How to</h2>
+
+                        <p>
+                            <ol>
+                                <li class="fragment fade-in">find your defaults (which are suitable for most test cases)</li>
+                                <li class="fragment fade-in">find the right abstraction for each <i>"mother"</i></li>
+                                <li class="fragment fade-in">test your created test data(!)</li>
+                                <li class="fragment fade-in">test your supply methods</li>
+                            </ol>
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Test Frameworks</h2>
+                    </section>
+
+
+                    <section>
+                        <h2>AssertJ</h2>
+
+                        <p>Test DSL for assertions</p>
+
+                        <p>
+                            <pre>
+                            <code data-trim>
+                                @Test
+public void registerUserSetsId() {
+    // given
+    User user = mother.givenAnUnpersistedUser();
+
+    // when
+    User registerUser = userRegistrar.registerUser(user);
+
+    // then
+    userAssert(registerUser)
+        .hasId()
+        .isActiveUser()
+        .hasSurName(user.getSurName());
+}
+                            </code>
+                            </pre>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2>Hamcrest</h2>
+
+                        <p>Matcher "DSL" for assertions</p>
+
+                        <p>
+                            <pre>
+                                <code data-trim>
+                                    @Test
+public void registerUserCreatesDefaultRole() {
+    // given
+    User user = mother.givenAnUnpersistedUser();
+    Role role = mother.givenAnUnpersistedRole();
+    supply(user, with(role));
+
+    // when
+    User registerUser = userRegistrar.registerUser(user);
+
+    // then
+    assertThat(registerUser, hasProperty("roles", hasSize(2)));
+    assertThat(registerUser, not(hasRole("ROLE_SUPER_ADMIN")));
+}
+                                </code>
+                            </pre>
+                    </section>
+
+                    <section>
+                        <h2>Truth</h2>
+
+                        <p>Matcher "DSL" for assertions</p>
+
+                        <p>
+                            <pre>
+                                <code data-trim>
+@Test
+public void registerAdminSetsBothRoles() {
+    // given
+    User user = mother.givenAnUnpersistedUser();
+
+    // when
+    User registerUser = userRegistrar.registerAdmin(user);
+
+    // then
+    assertThat(registerUser.getRoles())
+        .containsExactly(ROLE_USER, ROLE_ADMIN).inOrder();
+    assume().that(registerUser).isNotNull();
+}
+                                </code>
+                            </pre>
+                        </p>
+                    </section>
+
+                </section>
+
+				<section>
+					<h2>Links</h2>
+					<p>
+						<ul>
+							<li>AssertJ: </li>
+							<li>Hamcrest: </li>
+							<li>Truth: </li>
+							<li>Test Mother: </li>
+						</ul>
+					</p>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				/*parallaxBackgroundImage: https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg*/
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

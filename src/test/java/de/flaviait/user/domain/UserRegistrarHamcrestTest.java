@@ -2,7 +2,9 @@ package de.flaviait.user.domain;
 
 import de.flaviait.user.mother.DomainMother;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static de.flaviait.user.mother.DomainMother.supply;
 import static de.flaviait.user.mother.DomainMother.with;
@@ -14,6 +16,9 @@ import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 public class UserRegistrarHamcrestTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private DomainMother mother = new DomainMother();
 
@@ -34,6 +39,19 @@ public class UserRegistrarHamcrestTest {
 
         // then
         assertThat(registerUser, hasProperty("id", notNullValue()));
+    }
+
+    @Test
+    public void registerUserWithNoFirstNameThrowsException() throws Exception {
+        // given
+        User user = mother.givenAnUnpersistedUser();
+        user.setFirstName(null);
+
+        // expect
+        expectedException.expect(NullPointerException.class);
+
+        // when
+        userRegistrar.registerUser(user);
     }
 
     @Test

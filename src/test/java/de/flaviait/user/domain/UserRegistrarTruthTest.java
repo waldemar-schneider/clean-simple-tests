@@ -65,7 +65,19 @@ public class UserRegistrarTruthTest {
     }
 
     @Test
-    public void registerUserSetsFreshIdentifier() {
+    public void registerUserActivatesUser() {
+        // given
+        User user = mother.givenAnUnpersistedUser();
+
+        // when
+        User registerUser = userRegistrar.registerUser(user);
+
+        // then
+        assertThat(registerUser.isActive()).isTrue();
+    }
+
+    @Test
+    public void registerUserSetIdentifier() {
         // given
         User user = mother.givenAnUnpersistedUser();
 

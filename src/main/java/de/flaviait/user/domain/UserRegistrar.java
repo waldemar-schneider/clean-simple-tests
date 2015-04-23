@@ -20,21 +20,33 @@ public class UserRegistrar {
     public User registerUser(User user) {
         validateUser(user);
 
-        user.setId(nextId());
+        generateId(user);
         addUserRole(user);
-        registration.put(user.getId(), user);
-        user.setActive(true);
+        registerInteral(user);
+        activateUser(user);
 
         return user;
+    }
+
+    private void generateId(User user) {
+        user.setId(nextId());
+    }
+
+    private void registerInteral(User user) {
+        registration.put(user.getId(), user);
+    }
+
+    private void activateUser(User user) {
+        user.setActive(true);
     }
 
     public User registerAdmin(User user) {
         validateUser(user);
 
-        user.setId(nextId());
+        generateId(user);
         addUserRole(user);
         addAdminRole(user);
-        registration.put(user.getId(), user);
+        registerInteral(user);
 
         return user;
     }
